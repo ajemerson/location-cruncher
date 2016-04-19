@@ -2,8 +2,22 @@ import java.text.*;
 import java.util.Date;
 
 public class InteractionHandler {
-	double PHYSICAL_DISTANCE_LIMIT = 0.1;	//in km
-	long TIME_DIFFERENCE_LIMIT = 120;		//in seconds
+	double PHYSICAL_DISTANCE_LIMIT = 0.1;	//in km, not set in stone
+	long TIME_DIFFERENCE_LIMIT = 120;		//in seconds, not set in stone
+	
+	/**
+	 * Takes in exported Firebase JSON file and parses data.
+	 */
+	public void parseData() {
+		
+	}
+	
+	/**
+	 * Exports JSON file from Firebase.
+	 */
+	public void retrieveFirebaseData(){
+		
+	}
 	
 	/**
 	 * Determines if the time difference and physical distance of
