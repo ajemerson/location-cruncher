@@ -17,7 +17,7 @@ public class parameterGUI extends JFrame {
 	}
 
 	public static void main (String [] args) {
-		new parameterGUI("Choose parameters for interactions.");
+		new parameterGUI("Choose parameters for interactions:");
 	}
 	
 }

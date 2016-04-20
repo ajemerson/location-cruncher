@@ -2,21 +2,12 @@ import java.text.*;
 import java.util.Date;
 
 public class InteractionHandler {
-	double PHYSICAL_DISTANCE_LIMIT = 0.1;	//in km, not set in stone
-	long TIME_DIFFERENCE_LIMIT = 120;		//in seconds, not set in stone
+	double PHYSICAL_DISTANCE_LIMIT;	//in km, not set in stone
+	long TIME_DIFFERENCE_LIMIT;		//in seconds, not set in stone
 	
-	/**
-	 * Takes in exported Firebase JSON file and parses data.
-	 */
-	public void parseData() {
-		
-	}
-	
-	/**
-	 * Exports JSON file from Firebase.
-	 */
-	public void retrieveFirebaseData(){
-		
+	public InteractionHandler(double distance, long time) {
+		PHYSICAL_DISTANCE_LIMIT = distance;
+		TIME_DIFFERENCE_LIMIT = time;
 	}
 	
 	/**
@@ -57,5 +48,10 @@ public class InteractionHandler {
 		Date date2 = format.parse(time2);
 		long timeDifference = date2.getTime() - date1.getTime();
 		return timeDifference;
+	}
+	
+	public void createCSV() {
+		String fileName = "C:\\Users\\Andrew\\Desktop"+"/interactions.csv";
+		CSVFileWriter.writeCSVFile(fileName);
 	}
 }

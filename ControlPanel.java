@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.event.*;
 
+@SuppressWarnings("serial")
 public class ControlPanel extends JPanel {
 	private JTextField distanceParameter;
 	private JTextField timeParameter;
@@ -19,8 +20,29 @@ public class ControlPanel extends JPanel {
 		timeParameter = new JTextField("Time (in ms)");
 		calculateInteractions = new JButton("Calculate Interactions");
 		
+		distanceParameter.addActionListener(new JTextFieldListener());
+		timeParameter.addActionListener(new JTextFieldListener());
+		calculateInteractions.addActionListener(new JButtonListener());
+		
 		this.add(distanceParameter);
 		this.add(timeParameter);
 		this.add(calculateInteractions);
+	}
+	
+	private class JTextFieldListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+		}
+	}
+	
+	private class JButtonListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			InteractionHandler interactions = 
+					new InteractionHandler(Double.parseDouble(distanceParameter.getText()),
+							Long.parseLong(timeParameter.getText()));
+			interactions.createCSV();
+		}
 	}
 }
