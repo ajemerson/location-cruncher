@@ -16,8 +16,8 @@ public class ControlPanel extends JPanel {
 		this.setSize(x_dimension,y_dimension);
 		this.setBackground(randomColor);
 		
-		distanceParameter = new JTextField("Distance (in km)");
-		timeParameter = new JTextField("Time (in ms)");
+		distanceParameter = new JTextField("Distance (in m)");
+		timeParameter = new JTextField("Time (in s)");
 		calculateInteractions = new JButton("Calculate Interactions");
 		
 		distanceParameter.addActionListener(new JTextFieldListener());
@@ -40,8 +40,8 @@ public class ControlPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			InteractionHandler interactions = 
-					new InteractionHandler(Double.parseDouble(distanceParameter.getText()),
-							Long.parseLong(timeParameter.getText()));
+					new InteractionHandler((1000)*Double.parseDouble(distanceParameter.getText()),
+							(1000)*Long.parseLong(timeParameter.getText()));
 			interactions.createCSV();
 		}
 	}

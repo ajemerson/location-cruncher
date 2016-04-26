@@ -26,7 +26,7 @@ public class InteractionHandler {
 	 * Calculates the distance in km between two lat/long points
 	 * using the haversine formula.
 	 */
-	public double haversine(double lat1, double long1, double lat2, double long2){
+	public double distanceApart(double lat1, double long1, double lat2, double long2){
 	    int earthRadius = 6371; 	// average in km
 	    double differenceLat = Math.toRadians(lat2 - lat1);
 	    double differenceLong = Math.toRadians(long2 - long1);

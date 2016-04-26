@@ -7,7 +7,7 @@ public class CSVFileWriter {
     private static final String NEW_LINE_SEPARATOR = "\n";
     //CSV file header
     private static final String FILE_HEADER = 
-    		"user1,user2,time1,time2,lat1,lat2,long1,long2,interaction";
+    		"user1,user2,time1,time2,alt1,alt2,lat1,lat2,long1,long2,interaction";
     
     public static void writeCSVFile(String fileName) {
     	//Sample interaction data (NOT REAL DATA)
