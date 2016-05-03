@@ -2,6 +2,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.ParseException;
 
 import javax.swing.event.*;
 
@@ -42,7 +43,13 @@ public class ControlPanel extends JPanel {
 			InteractionHandler interactions = 
 					new InteractionHandler((1000)*Double.parseDouble(distanceParameter.getText()),
 							(1000)*Long.parseLong(timeParameter.getText()));
-			interactions.createCSV();
+			interactions.readJSON();
+//			try {
+//				interactions.buildInteractionArrays();
+//			} catch (ParseException e1) {
+//				e1.printStackTrace();
+//			}
+//			interactions.createCSV();
 		}
 	}
 }

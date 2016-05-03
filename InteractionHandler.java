@@ -1,5 +1,10 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,24 +13,24 @@ import org.json.*;
 
 
 public class InteractionHandler {
-	double PHYSICAL_DISTANCE_LIMIT;	//in km, not set in stone
-	long TIME_DIFFERENCE_LIMIT;		//in seconds, not set in stone
+	double PHYSICAL_DISTANCE_LIMIT;	//in km, converted to m
+	long TIME_DIFFERENCE_LIMIT;		//in ms, converted to s
 	ArrayList<String> inputUsers = new ArrayList<String>();
 	ArrayList<String> inputTimes = new ArrayList<String>();
 	ArrayList<Double> inputLats = new ArrayList<Double>();
 	ArrayList<Double> inputLongs = new ArrayList<Double>();
 	ArrayList<Double> inputAltitudes = new ArrayList<Double>();
-	ArrayList<String> interactionsUser1 = new ArrayList<String>();
-	ArrayList<String> interactionsUser2 = new ArrayList<String>();
-	ArrayList<Long> interactionsTime1 = new ArrayList<Long>();
-	ArrayList<Long> interactionsTime2 = new ArrayList<Long>();
-	ArrayList<Double> interactionsAlt1 = new ArrayList<Double>();
-	ArrayList<Double> interactionsAlt2 = new ArrayList<Double>();
-	ArrayList<Double> interactionsLat1 = new ArrayList<Double>();
-	ArrayList<Double> interactionsLat2 = new ArrayList<Double>();
-	ArrayList<Double> interactionsLong1 = new ArrayList<Double>();
-	ArrayList<Double> interactionsLong2 = new ArrayList<Double>();
-	ArrayList<Boolean> isInteractions = new ArrayList<Boolean>();
+	static ArrayList<String> interactionsUser1 = new ArrayList<String>();
+	static ArrayList<String> interactionsUser2 = new ArrayList<String>();
+	static ArrayList<Long> interactionsTime1 = new ArrayList<Long>();
+	static ArrayList<Long> interactionsTime2 = new ArrayList<Long>();
+	static ArrayList<Double> interactionsAlt1 = new ArrayList<Double>();
+	static ArrayList<Double> interactionsAlt2 = new ArrayList<Double>();
+	static ArrayList<Double> interactionsLat1 = new ArrayList<Double>();
+	static ArrayList<Double> interactionsLat2 = new ArrayList<Double>();
+	static ArrayList<Double> interactionsLong1 = new ArrayList<Double>();
+	static ArrayList<Double> interactionsLong2 = new ArrayList<Double>();
+	static ArrayList<Boolean> isInteractions = new ArrayList<Boolean>();
 	
 	public InteractionHandler(double distance, long time) {
 		PHYSICAL_DISTANCE_LIMIT = distance;
@@ -38,28 +43,71 @@ public class InteractionHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	public void readJSON() {
-		Scanner scan = new Scanner("exportedData.json");	//building JSON into String
-		String str = new String();
-		while (scan.hasNext()) {
-			str += scan.nextLine();
-		}
-		scan.close();
+		File exportData = new File("exportedData.txt");
+		Scanner dataScan = null;
+		String str = "";
+		try {
+			dataScan = new Scanner(exportData);	//building JSON into String
+			while (dataScan.hasNext()) {
+				str += dataScan.nextLine();
+			}
+			System.out.println(str);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}	
+		finally {dataScan.close();}
 		
-		JSONObject obj = new JSONObject(str);
-		JSONArray users = obj.getJSONArray("displayName");
-		for (int i = 0; i < users.length(); i++) {
-			JSONObject locations = obj.getJSONObject("locations");
-			ArrayList<String> keys = (ArrayList<String>) locations.keys();
-			for (int j = 0; j < keys.size(); j++) {
-				inputUsers.add(users.getString(i));
-				String[] dateAndTime = keys.get(i).split(" ");
-				inputTimes.add(dateAndTime[1]);
-				JSONObject data = locations.getJSONObject(keys.get(j));
-				inputLats.add(Double.parseDouble(data.getString("latitude")));
-				inputLongs.add(Double.parseDouble(data.getString("longitude")));
-				inputAltitudes.add(Double.parseDouble(data.getString("altitude")));
-			}	
+		String[] jsonData = str.split("[{},\"\\s+]+");
+		System.out.println(Arrays.toString(jsonData));
+		int counter = 1;
+		while (jsonData[counter] != null) {
+			if (jsonData[counter].equals("displayName")) {
+				int firstNameCount = counter + 2;
+				int lastNameCount = counter + 3;
+				while (!jsonData[counter+1].equals("displayName")){
+					if (jsonData[counter+1].contains("-")) {
+						inputUsers.add(jsonData[firstNameCount]+" "+jsonData[lastNameCount]);
+						System.out.println(inputUsers.toString());
+						inputTimes.add(jsonData[counter+3]);
+						System.out.println(inputTimes.toString());
+						inputAltitudes.add(Double.parseDouble(jsonData[counter+10]));
+						System.out.println(inputAltitudes.toString());
+						inputLats.add(Double.parseDouble(jsonData[counter+13]));
+						System.out.println(inputLats.toString());
+						inputLongs.add(Double.parseDouble(jsonData[counter+16]));
+						System.out.println(inputLongs.toString());
+					}
+					if ((counter+16) < jsonData.length) {
+							counter += 17;
+					}
+					else {
+						break;
+					}
+					System.out.println(counter);
+				}
+			}
+			if ((counter+1)<jsonData.length){
+				counter++;
+			}
+			else {
+				break;
+			}
 		}
+//		JSONObject obj = new JSONObject(str);
+//		JSONArray users = obj.getJSONArray("users");
+//		for (int i = 0; i < users.length(); i++) {
+//			JSONObject locations = obj.getJSONObject("locations");
+//			ArrayList<String> keys = (ArrayList<String>) locations.keys();
+//			for (int j = 0; j < keys.size(); j++) {
+//				inputUsers.add(users.getString(i));
+//				String[] dateAndTime = keys.get(i).split(" ");
+//				inputTimes.add(dateAndTime[1]);
+//				JSONObject data = locations.getJSONObject(keys.get(j));
+//				inputLats.add(Double.parseDouble(data.getString("latitude")));
+//				inputLongs.add(Double.parseDouble(data.getString("longitude")));
+//				inputAltitudes.add(Double.parseDouble(data.getString("altitude")));
+//			}	
+//		}
 	}
 	
 	/**
@@ -133,5 +181,70 @@ public class InteractionHandler {
 	public void createCSV() {
 		String fileName = "C:\\Users\\Andrew\\Desktop"+"/interactions.csv";
 		CSVFileWriter.writeCSVFile(fileName);
+	}
+	
+	/**
+	 * Assisting class to convert JSON processed data to CSV.
+	 * @author Andrew
+	 *
+	 */
+	private static class CSVFileWriter {
+	    //Delimiters used in CSV file.
+	    private static final String COMMA_DELIMITER = ",";
+	    private static final String NEW_LINE_SEPARATOR = "\n";
+	    //CSV file header
+	    private static final String FILE_HEADER = 
+	    		"user1,user2,time1,time2,alt1,alt2,lat1,lat2,long1,long2,interaction";
+	    
+	    public static void writeCSVFile(String fileName) {
+	    	FileWriter fileWriter = null;
+	    	
+	    	try {
+	    		fileWriter = new FileWriter(fileName);
+	    		//Write the CSV file header
+	    		fileWriter.append(FILE_HEADER.toString());
+	    		//Add a new line separator after the header
+	    		fileWriter.append(NEW_LINE_SEPARATOR);
+	    		for (int i = 0; i < interactionsUser1.size(); i++) {
+	    			fileWriter.append(interactionsUser1.get(i));
+	    			fileWriter.append(COMMA_DELIMITER);
+	    			fileWriter.append(interactionsUser2.get(i));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Long.toString(interactionsTime1.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Long.toString(interactionsTime2.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsAlt1.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsAlt2.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsLat1.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsLat2.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsLong1.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Double.toString(interactionsLong2.get(i)));
+		    		fileWriter.append(COMMA_DELIMITER);
+		    		fileWriter.append(Boolean.toString(isInteractions.get(i)));
+		    		fileWriter.append(NEW_LINE_SEPARATOR);
+	    		}
+	    		System.out.println("CSV file was created successfully !!!");
+	    	}
+	    	catch (Exception e) {
+	    		System.out.println("Error in CsvFileWriter !!!");
+	    		e.printStackTrace();
+	    	}
+	    	finally {
+	    		try {
+	    			fileWriter.flush();
+	    			fileWriter.close();
+	    		} catch (IOException e) {
+	    			System.out.println("Error while flushing/closing fileWriter !!!");
+	    			e.printStackTrace();
+	    		}
+	    	}
+	    	
+	    }
 	}
 }
