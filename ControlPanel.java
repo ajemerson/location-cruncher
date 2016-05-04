@@ -4,8 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
 
-import javax.swing.event.*;
-
 @SuppressWarnings("serial")
 public class ControlPanel extends JPanel {
 	private JTextField distanceParameter;
@@ -41,15 +39,15 @@ public class ControlPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			InteractionHandler interactions = 
-					new InteractionHandler((1000)*Double.parseDouble(distanceParameter.getText()),
-							(1000)*Long.parseLong(timeParameter.getText()));
+					new InteractionHandler(Double.parseDouble(distanceParameter.getText()),
+							(1/10000)*Long.parseLong(timeParameter.getText()));
 			interactions.readJSON();
-//			try {
-//				interactions.buildInteractionArrays();
-//			} catch (ParseException e1) {
-//				e1.printStackTrace();
-//			}
-//			interactions.createCSV();
+			try {
+				interactions.buildInteractionArrays();
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			interactions.createCSV();
 		}
 	}
 }

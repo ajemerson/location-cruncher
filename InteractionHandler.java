@@ -1,16 +1,9 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
-import java.util.Scanner;
-
-import org.json.*;
-
 
 public class InteractionHandler {
 	double PHYSICAL_DISTANCE_LIMIT;	//in km, converted to m
@@ -22,8 +15,8 @@ public class InteractionHandler {
 	ArrayList<Double> inputAltitudes = new ArrayList<Double>();
 	static ArrayList<String> interactionsUser1 = new ArrayList<String>();
 	static ArrayList<String> interactionsUser2 = new ArrayList<String>();
-	static ArrayList<Long> interactionsTime1 = new ArrayList<Long>();
-	static ArrayList<Long> interactionsTime2 = new ArrayList<Long>();
+	static ArrayList<String> interactionsTime1 = new ArrayList<String>();
+	static ArrayList<String> interactionsTime2 = new ArrayList<String>();
 	static ArrayList<Double> interactionsAlt1 = new ArrayList<Double>();
 	static ArrayList<Double> interactionsAlt2 = new ArrayList<Double>();
 	static ArrayList<Double> interactionsLat1 = new ArrayList<Double>();
@@ -31,6 +24,24 @@ public class InteractionHandler {
 	static ArrayList<Double> interactionsLong1 = new ArrayList<Double>();
 	static ArrayList<Double> interactionsLong2 = new ArrayList<Double>();
 	static ArrayList<Boolean> isInteractions = new ArrayList<Boolean>();
+	String[] users = new String[] {"john dkljfs","john dkljfs","john dkljfs","john dkljfs",
+			"john dkljfs","john dkljfs","john dkljfs","john dkljfs","john dkljfs","john dkljfs",
+			"Brady Coye","Brady Coye","Brady Coye","Brady Coye","Brady Coye","Brady Coye",
+			"Brady Coye","Brady Coye","Brady Coye","Brady Coye","Brady Coye","Brady Coye"};
+	String[] times = new String[] {"20:02:20","20:02:33","20:02:37","20:02:40","20:02:43",
+			"20:02:46","20:02:48","20:02:51","20:02:54","20:03:18","20:04:26","20:04:30",
+			"20:01:11","19:59:46","19:59:22","19:58:45","20:02:49","20:01:52","20:01:55",
+			"19:59:21","19:58:26","20:01:42"};
+	Double[] lats = new Double[] {34.92450575813178,34.923121,34.92379,34.923759,34.925749,
+			34.93081,34.924671,34.924799,34.923121,34.923121,34.924315,34.925749,34.925872,
+			34.93081,34.923121,34.923121,34.92379,34.924315,34.925872,34.923759,34.925749,
+			34.93081};
+	Double[] longs = new Double[] {-82.43831584237742,-82.438259,-82.440137,-82.438817,
+			-82.437723,-82.434483,-82.437758,-82.43709,-82.438259,-82.438259,-82.440787,
+			-82.437723,-82.439411,-82.434483,-82.438259,-82.438259,-82.440137,-82.440787,
+			-82.439411,-82.438817,-82.437723,-82.434483};
+	Double[] alts = new Double[] {1.0,0.0,1.0,0.0,0.3,0.0,0.0,4.0,0.0,0.0,
+			0.0,3.0,0.0,2.0,0.0,0.2,0.0,0.0,1.0,0.0,2.0,0.0};
 	
 	public InteractionHandler(double distance, long time) {
 		PHYSICAL_DISTANCE_LIMIT = distance;
@@ -41,73 +52,12 @@ public class InteractionHandler {
 	 * Reads output JSON from Firebase and puts appropriate data
 	 * into ArrayLists.
 	 */
-	@SuppressWarnings("unchecked")
 	public void readJSON() {
-		File exportData = new File("exportedData.txt");
-		Scanner dataScan = null;
-		String str = "";
-		try {
-			dataScan = new Scanner(exportData);	//building JSON into String
-			while (dataScan.hasNext()) {
-				str += dataScan.nextLine();
-			}
-			System.out.println(str);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}	
-		finally {dataScan.close();}
-		
-		String[] jsonData = str.split("[{},\"\\s+]+");
-		System.out.println(Arrays.toString(jsonData));
-		int counter = 1;
-		while (jsonData[counter] != null) {
-			if (jsonData[counter].equals("displayName")) {
-				int firstNameCount = counter + 2;
-				int lastNameCount = counter + 3;
-				while (!jsonData[counter+1].equals("displayName")){
-					if (jsonData[counter+1].contains("-")) {
-						inputUsers.add(jsonData[firstNameCount]+" "+jsonData[lastNameCount]);
-						System.out.println(inputUsers.toString());
-						inputTimes.add(jsonData[counter+3]);
-						System.out.println(inputTimes.toString());
-						inputAltitudes.add(Double.parseDouble(jsonData[counter+10]));
-						System.out.println(inputAltitudes.toString());
-						inputLats.add(Double.parseDouble(jsonData[counter+13]));
-						System.out.println(inputLats.toString());
-						inputLongs.add(Double.parseDouble(jsonData[counter+16]));
-						System.out.println(inputLongs.toString());
-					}
-					if ((counter+16) < jsonData.length) {
-							counter += 17;
-					}
-					else {
-						break;
-					}
-					System.out.println(counter);
-				}
-			}
-			if ((counter+1)<jsonData.length){
-				counter++;
-			}
-			else {
-				break;
-			}
-		}
-//		JSONObject obj = new JSONObject(str);
-//		JSONArray users = obj.getJSONArray("users");
-//		for (int i = 0; i < users.length(); i++) {
-//			JSONObject locations = obj.getJSONObject("locations");
-//			ArrayList<String> keys = (ArrayList<String>) locations.keys();
-//			for (int j = 0; j < keys.size(); j++) {
-//				inputUsers.add(users.getString(i));
-//				String[] dateAndTime = keys.get(i).split(" ");
-//				inputTimes.add(dateAndTime[1]);
-//				JSONObject data = locations.getJSONObject(keys.get(j));
-//				inputLats.add(Double.parseDouble(data.getString("latitude")));
-//				inputLongs.add(Double.parseDouble(data.getString("longitude")));
-//				inputAltitudes.add(Double.parseDouble(data.getString("altitude")));
-//			}	
-//		}
+		inputUsers.addAll(Arrays.asList(users));
+		inputTimes.addAll(Arrays.asList(times));
+		inputLats.addAll(Arrays.asList(lats));
+		inputLongs.addAll(Arrays.asList(longs));
+		inputAltitudes.addAll(Arrays.asList(alts));
 	}
 	
 	/**
@@ -121,11 +71,11 @@ public class InteractionHandler {
 				double distanceDifference = distanceApart(inputLats.get(i),inputLongs.get(i),
 						inputLats.get(j),inputLongs.get(j));
 				long timeDifference = timeDifference(inputTimes.get(i),inputTimes.get(j));
-				if (isInteraction(distanceDifference, timeDifference)) {
+				if ((isInteraction(distanceDifference, timeDifference)) && i!=j) {
 					interactionsUser1.add(inputUsers.get(i));
 					interactionsUser2.add(inputUsers.get(j));
-					interactionsTime1.add(Long.parseLong(inputTimes.get(i)));
-					interactionsTime2.add(Long.parseLong(inputTimes.get(j)));
+					interactionsTime1.add(inputTimes.get(i));
+					interactionsTime2.add(inputTimes.get(j));
 					interactionsAlt1.add(inputAltitudes.get(i));
 					interactionsAlt2.add(inputAltitudes.get(j));
 					interactionsLat1.add(inputLats.get(i));
@@ -175,7 +125,8 @@ public class InteractionHandler {
 		Date date1 = format.parse(time1);
 		Date date2 = format.parse(time2);
 		long timeDifference = date2.getTime() - date1.getTime();
-		return timeDifference;
+		long diffSeconds = timeDifference / 1000 % 60;
+		return diffSeconds;
 	}
 	
 	public void createCSV() {
@@ -210,9 +161,9 @@ public class InteractionHandler {
 	    			fileWriter.append(COMMA_DELIMITER);
 	    			fileWriter.append(interactionsUser2.get(i));
 		    		fileWriter.append(COMMA_DELIMITER);
-		    		fileWriter.append(Long.toString(interactionsTime1.get(i)));
+		    		fileWriter.append(interactionsTime1.get(i));
 		    		fileWriter.append(COMMA_DELIMITER);
-		    		fileWriter.append(Long.toString(interactionsTime2.get(i)));
+		    		fileWriter.append(interactionsTime2.get(i));
 		    		fileWriter.append(COMMA_DELIMITER);
 		    		fileWriter.append(Double.toString(interactionsAlt1.get(i)));
 		    		fileWriter.append(COMMA_DELIMITER);
